@@ -1,0 +1,34 @@
+<div class="min-h-screen flex items-center justify-center bg-background p-6">
+  <div
+    class="w-full max-w-md rounded-xl border border-bdcolor bg-secondary p-8 text-center shadow-sm"
+  >
+    <div class="mb-4 flex justify-center">
+      <div
+        class="flex items-center justify-center rounded-full bg-main size-16 text-white text-3xl"
+      >
+        ✓
+      </div>
+    </div>
+
+    <h1 class="text-2xl font-semibold text-text mb-2">¡Registro exitoso!</h1>
+
+    <p class="text-text text-sm mb-6">
+      Tus datos fueron registrados correctamente. Ahora estás participando en el sorteo de una
+      sesión de fisioterapia.
+    </p>
+
+    <div class="bg-background border border-bdcolor rounded-lg p-4 text-left space-y-2">
+      <p class="text-sm text-text">
+        <span class="font-semibold">Nombre:</span>
+        {{ name }}
+      </p>
+
+      <p class="text-sm text-text">
+        <span class="font-semibold">Celular:</span>
+        {{ phone }}
+      </p>
+    </div>
+
+    <p class="mt-6 text-xs text-text/70">El ganador será contactado al número registrado.</p>
+  </div>
+</div>

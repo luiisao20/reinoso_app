@@ -1,0 +1,78 @@
+<div class="mx-auto md:w-1/2 flex justify-center items-center min-h-screen px-4">
+  <form
+    [formGroup]="registerForm"
+    class="space-y-4 min-w-full rounded-lg border border-bdcolor bg-secondary p-6"
+  >
+    <h2 class="font-semibold text-center text-text text-xl">¡Rellena tus datos para participar!</h2>
+    <div>
+      <input
+        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
+        id="name"
+        autocapitalize="words"
+        formControlName="name"
+        name="name"
+        type="text"
+        placeholder="Escribe tu nombre"
+      />
+      @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+        <p class="text-xs text-red-500">Este campo es obligatorio</p>
+      }
+    </div>
+    <div>
+      <input
+        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
+        id="phone"
+        formControlName="phone"
+        name="phone"
+        type="tel"
+        placeholder="Escribe tu número de celular"
+      />
+      @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+        <p class="text-xs text-red-500">Este campo es obligatorio</p>
+      }
+    </div>
+    <fieldset>
+      <legend class="block text-sm font-medium text-gray-900">
+        ¿Por qué te gustaría recibir la terapia?
+      </legend>
+
+      <div class="mt-2 space-y-2">
+        @for (item of options; track $index) {
+          <div class="flex items-center gap-2">
+            <input
+              (change)="onCheckboxChange($event)"
+              class="size-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              [id]="item.id"
+              type="checkbox"
+              [name]="item.id"
+              [value]="item.value"
+            />
+            <label class="block text-sm text-gray-900" [for]="item.id">{{ item.name }}</label>
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <div>
+      <textarea
+        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
+        id="activity"
+        formControlName="activity"
+        name="activity"
+        rows="4"
+        placeholder="Actividad recreativa"
+      ></textarea>
+      @if (registerForm.get('activity')?.invalid && registerForm.get('activity')?.touched) {
+        <p class="text-xs text-red-500">Este campo es obligatorio</p>
+      }
+    </div>
+
+    <button
+      (click)="registerAction()"
+      class="block w-full rounded-lg bg-main px-12 py-3 text-sm font-semibold text-white transition-colors active:scale-125"
+      type="submit"
+    >
+      Participar
+    </button>
+  </form>
+</div>

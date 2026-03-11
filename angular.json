@@ -62,7 +62,10 @@
               "buildTarget": "sorteo-app:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "allowedHosts": ["lashed-militaristically-aryan.ngrok-free.dev"]
+          }
         },
         "test": {
           "builder": "@angular/build:unit-test"
