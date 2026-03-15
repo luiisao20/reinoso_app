@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { InfoService } from '../../service/info-service';
+import { InfoModel } from '../../models/interfaces';
 
 interface Option {
   name: string;
@@ -25,6 +27,7 @@ export class Home {
 
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private infoService = inject(InfoService);
 
   regexName = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
   regexPhone = /^\+?\d+$/;
@@ -34,9 +37,9 @@ export class Home {
     //Add 'implements OnInit' to the class.
     const isRegistered: boolean = localStorage.getItem('reinoso-registered') === 'true';
 
-    if (isRegistered) {
-      this.router.navigate(['error']);
-    }
+    // if (isRegistered) {
+    //   this.router.navigate(['error']);
+    // }
   }
 
   registerForm = this.fb.group({
@@ -63,11 +66,26 @@ export class Home {
       return;
     }
 
-    localStorage.setItem('reinoso-registered', 'true');
-    this.router.navigate(['success'], {
-      state: {
-        name: this.registerForm.get('name')?.value,
-        phone: this.registerForm.get('phone')?.value,
+    const newInfo: InfoModel = {
+      activity: this.registerForm.get('activity')?.value!,
+      name: this.registerForm.get('name')?.value!,
+      phone: this.registerForm.get('phone')?.value!,
+      reasons: this.registerForm.get('reasons')?.value! as string[],
+    };
+    this.infoService.saveInfo(newInfo).subscribe({
+      next: (value) => {
+        this.registerForm.reset();
+        alert('Informacion enviada con exito');
+        localStorage.setItem('reinoso-registered', `${value.id}`);
+        this.router.navigate(['success'], {
+          state: {
+            name: value.name,
+            phone: value.phone,
+          },
+        });
+      },
+      error: (error) => {
+        alert(error.message);
       },
     });
   }

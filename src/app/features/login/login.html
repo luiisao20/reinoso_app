@@ -1,0 +1,58 @@
+<div class="min-h-screen flex justify-center items-center px-4">
+  <gc-card variant="elevated" class="w-full max-w-md">
+    <div gcCardHeader class="text-center space-y-1">
+      <h1 class="text-xl font-bold text-gray-900">Iniciar sesión</h1>
+      <p class="text-sm text-gray-500">Ingresa tus credenciales para acceder</p>
+    </div>
+
+    <div class="space-y-4">
+      <gc-input
+        type="email"
+        placeholder="Ingresa tu correo electrónico"
+        [value]="email()"
+        [invalid]="emailInvalid()"
+        [inputDescription]="emailInvalid() ? 'El email es obligatorio' : ''"
+        (valueChange)="email.set($event)"
+      />
+
+      <gc-input
+        [type]="showPassword() ? 'text' : 'password'"
+        placeholder="Ingresa tu contraseña"
+        [value]="password()"
+        [invalid]="passwordInvalid()"
+        [inputDescription]="passwordInvalid() ? 'La contraseña es obligatoria' : ''"
+        (valueChange)="password.set($event)"
+      />
+
+      <gc-button class="w-full" [disabled]="loading()" (click)="onLogin()">
+        @if (loading()) {
+          <gc-spinner size="xs" color="#fff" /> Iniciando sesión...
+        } @else {
+          Iniciar sesión
+        }
+      </gc-button>
+    </div>
+
+    <div gcCardFooter class="text-center">
+      <p class="text-sm text-gray-500">
+        ¿No tienes cuenta?
+        <a routerLink="/examples/register">Regístrate</a>
+      </p>
+    </div>
+  </gc-card>
+</div>
+
+<!-- Modal de confirmación -->
+<gc-dialog title="¡Inicio de sesión exitoso!" [open]="!!submittedData()" (closed)="onDialogClose()">
+  <div class="space-y-2 text-sm text-gray-700">
+    <p><strong>Email:</strong> {{ submittedData()?.email }}</p>
+    <p>
+      <strong>Recordar sesión:</strong>
+      {{ submittedData()?.rememberMe ? 'Sí' : 'No' }}
+    </p>
+    <p class="text-xs text-gray-400 pt-2">Al cerrar este modal el formulario se reiniciará.</p>
+  </div>
+  <div gcDialogFooter>
+    <gc-button (click)="onDialogClose()">Entendido</gc-button>
+  </div>
+</gc-dialog>

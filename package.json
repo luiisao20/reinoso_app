@@ -20,6 +20,9 @@
       }
     ]
   },
+  "overrides": {
+    "undici": "^7.24.0"
+  },
   "private": true,
   "packageManager": "npm@11.10.0",
   "dependencies": {
@@ -29,11 +32,15 @@
     "@angular/forms": "^21.1.0",
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
+    "@ng-icons/core": "^33.1.0",
+    "@ng-icons/ionicons": "^33.1.0",
+    "@ng-icons/material-icons": "^33.1.0",
+    "garaq-angular-components": "^0.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^21.1.2",
+    "@angular/build": "^21.1.0",
     "@angular/cli": "^21.1.2",
     "@angular/compiler-cli": "^21.1.0",
     "@tailwindcss/postcss": "^4.1.12",

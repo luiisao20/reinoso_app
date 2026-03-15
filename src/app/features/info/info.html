@@ -1,0 +1,50 @@
+<div class="absolute right-2 top-2">
+  <gc-button background="red">Cerrar sesion</gc-button>
+</div>
+
+<div class="flex flex-col justify-center items-center min-h-screen px-4">
+  <h2 class="font-semibold text-xl text-center mb-4">Listado de clientes registrados</h2>
+  <div class="w-full flex items-end gap-6">
+    <gc-input
+      (valueChange)="onSearch($event)"
+      inputLabel="Busca un cliente"
+      placeholder="Escribe el nombre de un cliente"
+    />
+    <button (click)="getInfoList()">
+      <ng-icon name="ionReloadCircle" color="#49B1E9" size="30" />
+    </button>
+  </div>
+
+  <div class="h-128 mb-8 border border-bdcolor rounded-xl w-full mt-4 overflow-y-scroll relative">
+    @if (infoList().length > 0) {
+      @for (item of infoList(); track item.id) {
+        <app-info-component
+          (selectInfoToDelete)="setInfoToDelete($event)"
+          [item]="item"
+        ></app-info-component>
+      }
+    } @else {
+      <p class="text-center p-4">Cargando clientes...</p>
+    }
+  </div>
+  <div class="flex flex-col space-y-2 w-full">
+    <gc-button class="w-full" size="lg" background="#49B1E9">Realizar sorteo</gc-button>
+    <gc-button class="w-full" size="lg" background="green">Realizar un registro</gc-button>
+    <gc-button (click)="dialogOpen.set(true)" class="w-full" size="lg" background="red"
+      >Borrar todos los registros</gc-button
+    >
+  </div>
+</div>
+
+<gc-dialog title="Confirmar acción" [open]="dialogOpen()" (openChange)="dialogOpen.set($event)">
+  <p>¿Estás seguro de eliminar a {{ itemToDelete()?.name }}?</p>
+  <div gcDialogFooter class="flex justify-end gap-3">
+    <gc-button variant="outline" (click)="dialogOpen.set(false)">Cancelar</gc-button>
+    <gc-button
+      background="red"
+      [disabled]="loading()"
+      (click)="itemToDelete() ? onDeleteItem() : deleteAll()"
+      >{{ loading() ? 'Cargando' : 'Confirmar' }}
+    </gc-button>
+  </div>
+</gc-dialog>
