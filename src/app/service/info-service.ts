@@ -16,7 +16,11 @@ export class InfoService {
   }
 
   getInfoById(id: number): Promise<InfoModel | null> {
-    return lastValueFrom(this.http.get<InfoModel>(`${this.URL_INFO}/${id}`))
+    return lastValueFrom(this.http.get<InfoModel>(`${this.URL_INFO}/${id}`)).catch(() => null);
+  }
+
+  updateWinnerInfo(id: number, winner: boolean): Promise<InfoModel | null> {
+    return lastValueFrom(this.http.patch<InfoModel>(`${this.URL_INFO}/updateWinner/${id}`, winner));
   }
 
   getInfo(name?: string): Observable<InfoModel[]> {

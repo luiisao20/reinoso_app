@@ -89,6 +89,7 @@ export class Home {
       reasons: this.registerForm.get('reasons')?.value! as string[],
       lastName: this.registerForm.get('lastName')?.value!,
       accept: this.registerForm.get('accept')?.value! as any,
+      winner: false
     };
 
     this.infoService.saveInfo(newInfo).subscribe({

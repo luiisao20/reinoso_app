@@ -6,6 +6,7 @@ export interface InfoModel {
   phone: string;
   reasons: string[];
   accept: boolean;
+  winner?: boolean;
 }
 
 export interface AuthResponse {

@@ -3,10 +3,11 @@ import { DrawInfo } from '../../models/interfaces';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ionCallSharp } from '@ng-icons/ionicons';
 import { FormatDate } from '../../service/format-date';
+import { ButtonComponent } from "garaq-angular-components";
 
 @Component({
   selector: 'app-draw-component',
-  imports: [NgIcon],
+  imports: [NgIcon, ButtonComponent],
   providers: provideIcons({ ionCallSharp }),
   templateUrl: './draw-component.html',
   styleUrl: './draw-component.css',

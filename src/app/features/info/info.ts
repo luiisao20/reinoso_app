@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ionAdd, ionReloadCircle, ionRemove } from '@ng-icons/ionicons';
 import { DrawService } from '../../service/draw-service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-info',
@@ -18,7 +19,9 @@ import { DrawService } from '../../service/draw-service';
 export class Info {
   private infoService = inject(InfoService);
   private drawService = inject(DrawService);
+  private router = inject(Router);
 
+  loadingList = signal<boolean>(true);
   dialogOpen = signal<boolean>(false);
   dialogDeleteAll = signal<boolean>(false);
   dialogSorteo = signal<boolean>(false);
@@ -31,7 +34,18 @@ export class Info {
   winners = signal<number>(1);
 
   getInfoList() {
-    this.infoService.getInfo(this.name()).subscribe((data) => this.infoList.set(data));
+    this.loadingList.set(true);
+    this.infoService.getInfo(this.name()).subscribe({
+      next: (res) => {
+        this.infoList.set(res);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        this.loadingList.set(false);
+      },
+    });
   }
 
   onSearch(value: string) {
@@ -66,6 +80,10 @@ export class Info {
   }
 
   onDeleteItem() {
+    if (this.itemToDelete()?.winner === true) {
+      alert('No se puede eliminar un ganador de un sorteo');
+      return;
+    }
     this.loading.set(true);
     if (this.itemToDelete()) {
       this.infoService.deleteInfo(this.itemToDelete()?.id!).subscribe({
@@ -95,8 +113,12 @@ export class Info {
     }
   }
 
-  saveDraw() {
+  async saveDraw() {
     this.loadingDraw.set(true);
+    for (const element of this.winnersList()) {
+      await this.infoService.updateWinnerInfo(element.id!, true);
+    }
+
     const draw: Draw = {
       winners: this.winnersList().map((winner) => winner.id!),
     }
@@ -105,6 +127,7 @@ export class Info {
       next: () => {
         alert('Sorteo guardado con exito');
         this.dialogSorteo.set(false);
+        this.router.navigate(['draw']);
       },
       error: (error) => {
         alert(error.message);
