@@ -1,27 +1,34 @@
 import { Component, inject, signal } from '@angular/core';
 import { InputComponent, DialogComponent, ButtonComponent } from 'garaq-angular-components';
 import { InfoService } from '../../service/info-service';
-import { InfoModel } from '../../models/interfaces';
+import { Draw, InfoModel } from '../../models/interfaces';
 import { InfoComponent } from '../../shared/info-component/info-component';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { ionReloadCircle } from '@ng-icons/ionicons';
+import { ionAdd, ionReloadCircle, ionRemove } from '@ng-icons/ionicons';
+import { DrawService } from '../../service/draw-service';
 
 @Component({
   selector: 'app-info',
   imports: [InputComponent, InfoComponent, FormsModule, DialogComponent, ButtonComponent, NgIcon],
-  providers: provideIcons({ ionReloadCircle }),
+  providers: provideIcons({ ionReloadCircle, ionAdd, ionRemove }),
   templateUrl: './info.html',
   styleUrl: './info.css',
 })
 export class Info {
   private infoService = inject(InfoService);
+  private drawService = inject(DrawService);
 
   dialogOpen = signal<boolean>(false);
+  dialogDeleteAll = signal<boolean>(false);
+  dialogSorteo = signal<boolean>(false);
   name = signal<string>('');
   infoList = signal<InfoModel[]>([]);
+  winnersList = signal<InfoModel[]>([]);
   itemToDelete = signal<InfoModel | null>(null);
   loading = signal<boolean>(false);
+  loadingDraw = signal<boolean>(false);
+  winners = signal<number>(1);
 
   getInfoList() {
     this.infoService.getInfo(this.name()).subscribe((data) => this.infoList.set(data));
@@ -75,5 +82,38 @@ export class Info {
         },
       });
     }
+  }
+
+  doSorteo() {
+    this.winnersList.set([]);
+    while (this.winnersList().length < this.winners()) {
+      const randomIndex = Math.floor(Math.random() * this.infoList().length);
+      const selected = this.infoList()[randomIndex];
+      if (!this.winnersList().some((winner) => winner.id === selected.id)) {
+        this.winnersList.update((list) => [...list, selected]);
+      }
+    }
+  }
+
+  saveDraw() {
+    this.loadingDraw.set(true);
+    const draw: Draw = {
+      winners: this.winnersList().map((winner) => winner.id!),
+    }
+
+    this.drawService.saveDraw(draw).subscribe({
+      next: () => {
+        alert('Sorteo guardado con exito');
+        this.dialogSorteo.set(false);
+      },
+      error: (error) => {
+        alert(error.message);
+        this.dialogSorteo.set(false);
+      },
+      complete: () => {
+        this.loadingDraw.set(false);
+        this.winnersList.set([]);
+      },
+    });
   }
 }

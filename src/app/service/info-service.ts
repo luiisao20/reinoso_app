@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { InfoModel } from '../models/interfaces';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { environment } from '../../environment/environment';
 
 @Injectable({
@@ -13,6 +13,10 @@ export class InfoService {
 
   saveInfo(info: InfoModel): Observable<InfoModel> {
     return this.http.post<InfoModel>(`${this.URL_INFO}/save`, info);
+  }
+
+  getInfoById(id: number): Promise<InfoModel | null> {
+    return lastValueFrom(this.http.get<InfoModel>(`${this.URL_INFO}/${id}`))
   }
 
   getInfo(name?: string): Observable<InfoModel[]> {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InfoService } from '../../service/info-service';
@@ -30,22 +30,33 @@ export class Home {
   private infoService = inject(InfoService);
 
   regexName = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
-  regexPhone = /^\+?\d+$/;
-  regexActivity = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    const isRegistered: boolean = localStorage.getItem('reinoso-registered') === 'true';
+  regexPhone = /^0\d{9}$/;
+  loading = signal<boolean>(false);
 
-    // if (isRegistered) {
-    //   this.router.navigate(['error']);
-    // }
+  getErrorMessage(controlName: string): string {
+    const control = this.registerForm.get(controlName);
+    if (!control?.touched || !control?.invalid) return '';
+
+    if (control.hasError('required')) return 'Este campo es obligatorio';
+    if (control.hasError('pattern')) {
+      const messages: Record<string, string> = {
+        name: 'El nombre solo puede contener letras',
+        lastName: 'El apellido solo puede contener letras',
+        phone: 'Ingresa un número con 10 dígitos y empiece en 0',
+        activity: 'El texto ingresado no es válido',
+      };
+      return messages[controlName] ?? 'Formato inválido';
+    }
+
+    return '';
   }
 
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.pattern(this.regexName)]],
+    lastName: ['', [Validators.required, Validators.pattern(this.regexName)]],
     phone: ['', [Validators.required, Validators.pattern(this.regexPhone)]],
-    activity: ['', [Validators.required, Validators.pattern(this.regexActivity)]],
+    activity: ['', [Validators.required]],
+    accept: [false],
     reasons: this.fb.array([]),
   });
 
@@ -60,18 +71,26 @@ export class Home {
     }
   }
 
+  onCheckboxAcceptChange(event: any) {
+    this.registerForm.get('accept')?.setValue(event.target.checked);
+  }
+
   registerAction() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
+    this.loading.set(true);
     const newInfo: InfoModel = {
       activity: this.registerForm.get('activity')?.value!,
       name: this.registerForm.get('name')?.value!,
       phone: this.registerForm.get('phone')?.value!,
       reasons: this.registerForm.get('reasons')?.value! as string[],
+      lastName: this.registerForm.get('lastName')?.value!,
+      accept: this.registerForm.get('accept')?.value! as any,
     };
+
     this.infoService.saveInfo(newInfo).subscribe({
       next: (value) => {
         this.registerForm.reset();
@@ -87,6 +106,9 @@ export class Home {
       error: (error) => {
         alert(error.message);
       },
+      complete: () => {
+        this.loading.set(false);
+      }
     });
   }
 }

@@ -1,0 +1,100 @@
+<nav class="bg-white border-b border-gray-200">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-14">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 shrink-0">
+        <img src="/favicon.png" class="size-10" alt="" />
+        <span class="font-semibold text-gray-900 text-base">Reinoso Fisioterapia</span>
+      </a>
+
+      <!-- Desktop links -->
+      <div class="hidden md:flex items-center gap-1">
+        <a
+          routerLink="info"
+          class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+          >Listado</a
+        >
+        <a
+          routerLink=""
+          class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+          >Nuevo registro</a
+        >
+        <a
+          routerLink="draw"
+          class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+          >Sorteos</a
+        >
+      </div>
+
+      <!-- Desktop actions -->
+      <div class="hidden md:flex items-center gap-2">
+        <gc-button (click)="onLogout()" size="sm" background="red">Cerrar sesión</gc-button>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button
+        class="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+        [attr.aria-expanded]="menuOpen()"
+        aria-label="Abrir menú"
+        (click)="menuOpen.set(!menuOpen())"
+      >
+        @if (menuOpen()) {
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        } @else {
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (menuOpen()) {
+    <div class="md:hidden border-t border-gray-100">
+      <div class="px-4 py-3 space-y-1">
+        <a
+          routerLink="info"
+          class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+          >Listado</a
+        >
+        <a routerLink="" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+          >Nuevo registro</a
+        >
+        <a
+          routerLink="draw"
+          class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+          >Sorteos</a
+        >
+        <div class="pt-3 mt-1 border-t border-gray-100 flex flex-col gap-2">
+          <gc-button (click)="onLogout()" size="sm" background="red">Cerrar sesión</gc-button>
+        </div>
+      </div>
+    </div>
+  }
+</nav>

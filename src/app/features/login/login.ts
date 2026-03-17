@@ -8,6 +8,8 @@ import {
   DialogComponent,
 } from 'garaq-angular-components';
 import { AuthService } from '../../auth-service';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ionEyeOffOutline, ionEyeOutline } from '@ng-icons/ionicons';
 
 interface LoginData {
   email: string;
@@ -23,8 +25,10 @@ interface LoginData {
     ButtonComponent,
     SpinnerComponent,
     DialogComponent,
+    NgIcon,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: provideIcons({ ionEyeOutline, ionEyeOffOutline }),
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -43,6 +47,8 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  seePassword = signal<boolean>(false);
+  
   protected onLogin(): void {
     if (this.loading()) return;
     this.submitAttempted.set(true);

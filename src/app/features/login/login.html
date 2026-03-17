@@ -22,7 +22,11 @@
         [invalid]="passwordInvalid()"
         [inputDescription]="passwordInvalid() ? 'La contraseña es obligatoria' : ''"
         (valueChange)="password.set($event)"
-      />
+      >
+        <button gcSuffix (click)="showPassword.set(!showPassword())">
+          <ng-icon [name]="showPassword() ? 'ionEyeOffOutline' : 'ionEyeOutline'"></ng-icon>
+        </button>
+      </gc-input>
 
       <gc-button class="w-full" [disabled]="loading()" (click)="onLogin()">
         @if (loading()) {

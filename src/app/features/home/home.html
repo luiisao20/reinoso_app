@@ -14,8 +14,22 @@
         type="text"
         placeholder="Escribe tu nombre"
       />
-      @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-        <p class="text-xs text-red-500">Este campo es obligatorio</p>
+      @if (getErrorMessage('name')) {
+        <p class="text-xs text-red-500">{{ getErrorMessage('name') }}</p>
+      }
+    </div>
+    <div>
+      <input
+        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
+        id="lastName"
+        autocapitalize="words"
+        formControlName="lastName"
+        name="lastName"
+        type="text"
+        placeholder="Escribe tu apellido"
+      />
+      @if (getErrorMessage('lastName')) {
+        <p class="text-xs text-red-500">{{ getErrorMessage('lastName') }}</p>
       }
     </div>
     <div>
@@ -27,8 +41,8 @@
         type="tel"
         placeholder="Escribe tu número de celular"
       />
-      @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
-        <p class="text-xs text-red-500">Este campo es obligatorio</p>
+      @if (getErrorMessage('phone')) {
+        <p class="text-xs text-red-500">{{ getErrorMessage('phone') }}</p>
       }
     </div>
     <fieldset>
@@ -62,17 +76,30 @@
         rows="4"
         placeholder="Actividad recreativa"
       ></textarea>
-      @if (registerForm.get('activity')?.invalid && registerForm.get('activity')?.touched) {
-        <p class="text-xs text-red-500">Este campo es obligatorio</p>
+      @if (getErrorMessage('activity')) {
+        <p class="text-xs text-red-500">{{ getErrorMessage('activity') }}</p>
       }
     </div>
-
+    <div class="flex items-center gap-2">
+      <input
+        (change)="onCheckboxAcceptChange($event)"
+        class="size-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        id="accept"
+        type="checkbox"
+        name="accept"
+        value="accept"
+      />
+      <label class="block text-sm text-gray-900" for="accept"
+        >¿Aceptas que te contactemos para ofrecerte nuestros servicios y promociones?</label
+      >
+    </div>
     <button
+      [disabled]="loading()"
       (click)="registerAction()"
-      class="block w-full rounded-lg bg-main px-12 py-3 text-sm font-semibold text-white transition-colors active:scale-125"
+      class="block w-full rounded-lg bg-main px-12 py-3 text-sm font-semibold text-white transition-colors"
       type="submit"
     >
-      Participar
+      {{ loading() ? 'Cargando' : 'Participar' }}
     </button>
   </form>
 </div>

@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import {AuthService} from '../../auth-service';
 
 @Component({
   selector: 'app-success',
@@ -7,6 +8,8 @@ import { Component, signal } from '@angular/core';
   styleUrl: './success.css',
 })
 export class Success {
+  private authService = inject(AuthService);
+
   name = history.state.name;
   phone = history.state.phone;
 }
