@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { InfoService } from '../../service/info-service';
 import { InfoModel } from '../../models/interfaces';
+import { AuthService } from '../../auth-service';
 
 interface Option {
   name: string;
@@ -28,6 +29,7 @@ export class Home {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private infoService = inject(InfoService);
+  private authService = inject(AuthService);
 
   regexName = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
   regexPhone = /^0\d{9}$/;
@@ -89,13 +91,19 @@ export class Home {
       reasons: this.registerForm.get('reasons')?.value! as string[],
       lastName: this.registerForm.get('lastName')?.value!,
       accept: this.registerForm.get('accept')?.value! as any,
-      winner: false
+      winner: false,
     };
 
     this.infoService.saveInfo(newInfo).subscribe({
       next: (value) => {
         this.registerForm.reset();
         alert('Informacion enviada con exito');
+
+        if (this.authService.isAuthenticated()) {
+          this.router.navigate(['info']);
+          return;
+        }
+
         localStorage.setItem('reinoso-registered', `${value.id}`);
         this.router.navigate(['success'], {
           state: {
@@ -109,7 +117,7 @@ export class Home {
       },
       complete: () => {
         this.loading.set(false);
-      }
+      },
     });
   }
 }
