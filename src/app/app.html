@@ -1,5 +1,5 @@
 <div class="flex flex-col">
-  @if (authenticated()) {
+  @if (authService.isAuthenticated()) {
     <app-navbar></app-navbar>
   } @else {
     <div (click)="onGoLogin()" class="place-self-end mr-2 mt-2">

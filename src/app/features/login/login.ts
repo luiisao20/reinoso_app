@@ -61,6 +61,7 @@ export class Login {
         localStorage.setItem('email', res.email);
         localStorage.setItem('role', res.role);
         this.loading.set(false);
+        this.authService.isAuthenticated.set(true);
         this.router.navigate(['info']);
       },
 

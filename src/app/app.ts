@@ -12,13 +12,11 @@ import { Navbar } from './shared/navbar/navbar';
 })
 export class App implements OnInit {
   protected readonly title = signal('sorteo-app');
-  private authService = inject(AuthService);
+  protected authService = inject(AuthService);
   private router = inject(Router);
 
-  authenticated = signal<boolean>(false);
-
   ngOnInit(): void {
-    this.authService.checkAuthStatus().then((res) => this.authenticated.set(res));
+    this.authService.checkAuthStatus();
   }
 
   onGoLogin() {

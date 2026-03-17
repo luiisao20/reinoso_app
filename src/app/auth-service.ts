@@ -15,7 +15,6 @@ export class AuthService {
   isAuthenticated = signal<boolean>(false);
 
   login(email: string, password: string): Observable<AuthResponse> {
-    this.isAuthenticated.set(true);
     return this.http.post<AuthResponse>(`${this.AUTH_URL}/login`, { email, password });
   }
 
