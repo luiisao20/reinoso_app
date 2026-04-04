@@ -1,5 +1,5 @@
 export interface InfoModel {
-  id?: number;
+  id?: string;
   name: string;
   lastName: string;
   activity: string;
@@ -19,11 +19,19 @@ export interface AuthResponse {
 export interface Draw {
   id?: number;
   createdAt?: Date;
-  winners: number[];
+  winners: string[];
 }
 
 export interface DrawInfo {
   id: number;
   createdAt: Date;
   infos: InfoModel[];
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  number: number;
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { Draw, DrawInfo } from '../models/interfaces';
@@ -17,6 +17,11 @@ export class DrawService {
 
   getDrawById(id: number): Promise<DrawInfo | null> {
     return lastValueFrom(this.http.get<DrawInfo>(`${this.URL_INFO}/${id}`));
+  }
+
+  doDraw(size: number = 1): Promise<DrawInfo> {
+    const params = new HttpParams().set('size', size.toString());
+    return lastValueFrom(this.http.get<DrawInfo>(`${this.URL_INFO}/do`, { params }));
   }
 
   deleteDraw(id: number) {

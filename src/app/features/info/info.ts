@@ -1,13 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { InputComponent, DialogComponent, ButtonComponent } from 'garaq-angular-components';
 import { InfoService } from '../../service/info-service';
-import { Draw, InfoModel } from '../../models/interfaces';
+import { Draw, InfoModel, PageResponse } from '../../models/interfaces';
 import { InfoComponent } from '../../shared/info-component/info-component';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ionAdd, ionReloadCircle, ionRemove } from '@ng-icons/ionicons';
 import { DrawService } from '../../service/draw-service';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
+import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { lastValueFrom } from 'rxjs';
+import { ExcelService } from '../../service/excel-service';
 
 @Component({
   selector: 'app-info',
@@ -19,44 +22,57 @@ import {Router} from '@angular/router';
 export class Info {
   private infoService = inject(InfoService);
   private drawService = inject(DrawService);
+  private excelService = inject(ExcelService);
   private router = inject(Router);
 
-  loadingList = signal<boolean>(true);
+  loadingExcel = signal<boolean>(false);
   dialogOpen = signal<boolean>(false);
   dialogDeleteAll = signal<boolean>(false);
   dialogSorteo = signal<boolean>(false);
   name = signal<string>('');
-  infoList = signal<InfoModel[]>([]);
+  infoList = signal<PageResponse<InfoModel> | null>(null);
   winnersList = signal<InfoModel[]>([]);
   itemToDelete = signal<InfoModel | null>(null);
   loading = signal<boolean>(false);
   loadingDraw = signal<boolean>(false);
   winners = signal<number>(1);
+  total = signal<number>(0);
 
-  getInfoList() {
-    this.loadingList.set(true);
-    this.infoService.getInfo(this.name()).subscribe({
-      next: (res) => {
-        this.infoList.set(res);
-      },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        this.loadingList.set(false);
-      },
-    });
-  }
+  query = injectInfiniteQuery(() => ({
+    queryKey: ['infos', this.name()],
+    queryFn: async ({ pageParam }) => {
+      const res = await lastValueFrom(this.infoService.getInfo(this.name(), pageParam, 10));
+      this.total.set(res.totalElements);
+      return res;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+  }));
 
   onSearch(value: string) {
     this.name.set(value);
-    this.getInfoList();
   }
 
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.getInfoList();
+  async exportExcel() {
+    this.loadingExcel.set(true);
+    try {
+      const blob = await this.excelService.getExcel();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'participantes.xlsx';
+      document.body.appendChild(a);
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error al descargar el Excel', error);
+    } finally {
+      this.loadingExcel.set(false);
+    }
   }
 
   setInfoToDelete(item: InfoModel) {
@@ -68,7 +84,7 @@ export class Info {
     this.loading.set(true);
     this.infoService.deleteAllRegisters().subscribe({
       next: () => {
-        this.getInfoList();
+        this.query.refetch();
       },
       error: (error) => {
         console.log(error);
@@ -90,7 +106,7 @@ export class Info {
         next: () => {
           this.dialogOpen.set(false);
           this.itemToDelete.set(null);
-          this.getInfoList();
+          this.query.refetch();
         },
         error: (error) => {
           console.log(error);
@@ -102,15 +118,10 @@ export class Info {
     }
   }
 
-  doSorteo() {
+  async doSorteo() {
     this.winnersList.set([]);
-    while (this.winnersList().length < this.winners()) {
-      const randomIndex = Math.floor(Math.random() * this.infoList().length);
-      const selected = this.infoList()[randomIndex];
-      if (!this.winnersList().some((winner) => winner.id === selected.id)) {
-        this.winnersList.update((list) => [...list, selected]);
-      }
-    }
+    const res = await this.drawService.doDraw(this.winners());
+    this.winnersList.set(res.infos);
   }
 
   async saveDraw() {
@@ -121,7 +132,7 @@ export class Info {
 
     const draw: Draw = {
       winners: this.winnersList().map((winner) => winner.id!),
-    }
+    };
 
     this.drawService.saveDraw(draw).subscribe({
       next: () => {
@@ -137,6 +148,30 @@ export class Info {
         this.loadingDraw.set(false);
         this.winnersList.set([]);
       },
+    });
+  }
+
+  loadMore() {
+    if (this.query.isFetching()) return;
+    if (this.query.hasNextPage() && !this.query.isFetchingNextPage()) {
+      this.query.fetchNextPage();
+    }
+  }
+
+  anchor = viewChild<ElementRef>('infiniteAnchor');
+
+  constructor() {
+    effect(() => {
+      const el = this.anchor()?.nativeElement;
+      if (!el) return;
+
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          this.loadMore();
+        }
+      });
+
+      observer.observe(el);
     });
   }
 }

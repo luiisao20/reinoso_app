@@ -6,32 +6,43 @@
       inputLabel="Busca un cliente"
       placeholder="Escribe el nombre de un cliente"
     />
-    <button (click)="getInfoList()">
+    <button (click)="query.refetch()">
       <ng-icon name="ionReloadCircle" color="#49B1E9" size="30" />
     </button>
   </div>
 
-  <p class="mt-4 self-start text-sm">Registros: {{ infoList().length }}</p>
+  <p class="mt-4 self-start text-sm">Registros: {{ total() }}</p>
   <div class="h-128 mb-8 border border-bdcolor rounded-xl w-full mt-4 overflow-y-scroll relative">
-    @if (loadingList()) {
-      <p class="text-center p-4">Cargando clientes...</p>
-    } @else {
-      @if (infoList().length > 0) {
-        @for (item of infoList(); track item.id) {
-          <app-info-component
-            (selectInfoToDelete)="setInfoToDelete($event)"
-            [item]="item"
-          ></app-info-component>
-        }
-      } @else {
-        <p class="text-center p-4">No existen registros aún</p>
+    @if (query.isFetching()) {
+      <div class="absolute inset-0 flex justify-center items-center bg-white/70">
+        <p>Cargando...</p>
+      </div>
+    }
+    @for (page of query.data()?.pages; track $index) {
+      @for (item of page.content; track item.id) {
+        <app-info-component
+          (selectInfoToDelete)="setInfoToDelete($event)"
+          [item]="item"
+        ></app-info-component>
       }
+      <div #infiniteAnchor style="height: 10px"></div>
+    } @empty {
+      <p class="text-center p-4">No existen registros aún</p>
     }
   </div>
   <div class="flex flex-col space-y-2 w-full">
     <gc-button (click)="dialogSorteo.set(true)" class="w-full" size="lg" background="#49B1E9"
       >Realizar sorteo</gc-button
     >
+    <gc-button
+      [disabled]="loadingExcel()"
+      (click)="exportExcel()"
+      class="w-full"
+      size="lg"
+      background="#49B1E9"
+    >
+      {{ loadingExcel() ? 'Descargando' : 'Exportar excel' }}
+    </gc-button>
     <gc-button (click)="dialogDeleteAll.set(true)" class="w-full" size="lg" background="red"
       >Borrar todos los registros</gc-button
     >
@@ -74,14 +85,14 @@
     ></ng-icon>
     <p class="text-xl">{{ winners() }}</p>
     <ng-icon
-      (click)="winners() < infoList().length && winners.set(winners() + 1)"
+      (click)="winners() < total() && winners.set(winners() + 1)"
       name="ionAdd"
       size="35"
       color="#49B1E9"
       class="border border-bdcolor rounded-xl active:opacity-60"
     ></ng-icon>
   </div>
-  @if (winners() === infoList().length) {
+  @if (winners() === total()) {
     <p class="text-red-500">
       El número de ganadores no puede exceder del número total de participantes
     </p>
@@ -99,7 +110,7 @@
   <div gcDialogFooter class="flex justify-end gap-3">
     @if (winnersList.length !== 0) {
       <gc-button
-        [disabled]="winners() === infoList().length"
+        [disabled]="winners() === infoList()?.content?.length"
         variant="outline"
         background="#49B1E9"
         (click)="dialogOpen.set(false)"

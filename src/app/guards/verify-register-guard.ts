@@ -13,7 +13,7 @@ export const verifyRegisterGuard: CanMatchFn = async () => {
   if (id) {
     const infoService = inject(InfoService);
 
-    const res = await infoService.getInfoById(parseInt(id));
+    const res = await infoService.getInfoById(id);
 
     if (res) return false;
   }
