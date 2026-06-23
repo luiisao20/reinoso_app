@@ -1,105 +1,201 @@
-<div class="mx-auto md:w-1/2 flex justify-center items-center min-h-screen px-4">
+<div class="mx-auto md:w-1/2 flex justify-center items-center min-h-screen px-4 py-8">
   <form
     [formGroup]="registerForm"
-    class="space-y-4 min-w-full rounded-lg border border-bdcolor bg-secondary p-6"
+    class="min-w-full rounded-2xl border border-bdcolor bg-secondary p-6 shadow-lg space-y-8"
   >
-    <h2 class="font-semibold text-center text-text text-xl">¡Rellena tus datos para participar!</h2>
-    <div>
-      <input
-        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
-        id="name"
-        autocapitalize="words"
-        formControlName="name"
-        name="name"
-        type="text"
-        placeholder="Escribe tu nombre"
-      />
-      @if (getErrorMessage('name')) {
-        <p class="text-xs text-red-500">{{ getErrorMessage('name') }}</p>
-      }
-    </div>
-    <div>
-      <input
-        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
-        id="lastName"
-        autocapitalize="words"
-        formControlName="lastName"
-        name="lastName"
-        type="text"
-        placeholder="Escribe tu apellido"
-      />
-      @if (getErrorMessage('lastName')) {
-        <p class="text-xs text-red-500">{{ getErrorMessage('lastName') }}</p>
-      }
-    </div>
-    <div>
-      <input
-        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
-        id="phone"
-        formControlName="phone"
-        name="phone"
-        type="tel"
-        placeholder="Escribe tu número de celular"
-      />
-      @if (getErrorMessage('phone')) {
-        <p class="text-xs text-red-500">{{ getErrorMessage('phone') }}</p>
-      }
-    </div>
-    <fieldset>
-      <legend class="block text-sm font-medium text-gray-900">
-        ¿Por qué te gustaría recibir la terapia?
-      </legend>
+    <h2 class="font-bold text-center text-text text-2xl tracking-tight">¡Rellena tus datos para participar!</h2>
 
-      <div class="mt-2 space-y-2">
-        @for (item of options; track $index) {
-          <div class="flex items-center gap-2">
-            <input
-              (change)="onCheckboxChange($event)"
-              class="size-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              [id]="item.id"
-              type="checkbox"
-              [name]="item.id"
-              [value]="item.name"
-            />
-            <label class="block text-sm text-gray-900" [for]="item.id">{{ item.name }}</label>
-          </div>
+    <!-- ── SECCIÓN 1: DATOS PERSONALES ── -->
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center size-7 rounded-full bg-main text-white text-xs font-bold shrink-0">1</span>
+        <h3 class="text-sm font-bold uppercase tracking-widest text-text">Datos personales</h3>
+        <div class="flex-1 h-px bg-bdcolor"></div>
+      </div>
+
+      <!-- Nombres -->
+      <div>
+        <label class="block text-sm font-medium text-text mb-1" for="name">Nombres</label>
+        <input
+          class="w-full rounded-xl bg-background border border-bdcolor p-2 shadow-sm"
+          id="name"
+          autocapitalize="words"
+          formControlName="name"
+          name="name"
+          type="text"
+          placeholder="Escribe tus nombres"
+        />
+        @if (getErrorMessage('name')) {
+          <p class="text-xs text-red-500 mt-1">{{ getErrorMessage('name') }}</p>
         }
       </div>
-    </fieldset>
 
-    <div>
-      <textarea
-        class="mt-1 w-full rounded-lg bg-background border border-bdcolor p-2"
-        id="activity"
-        formControlName="activity"
-        name="activity"
-        rows="4"
-        placeholder="Actividad recreativa"
-      ></textarea>
-      @if (getErrorMessage('activity')) {
-        <p class="text-xs text-red-500">{{ getErrorMessage('activity') }}</p>
+      <!-- Apellidos -->
+      <div>
+        <label class="block text-sm font-medium text-text mb-1" for="lastName">Apellidos</label>
+        <input
+          class="w-full rounded-xl bg-background border border-bdcolor p-2 shadow-sm"
+          id="lastName"
+          autocapitalize="words"
+          formControlName="lastName"
+          name="lastName"
+          type="text"
+          placeholder="Escribe tus apellidos"
+        />
+        @if (getErrorMessage('lastName')) {
+          <p class="text-xs text-red-500 mt-1">{{ getErrorMessage('lastName') }}</p>
+        }
+      </div>
+
+      <!-- Edad -->
+      <div>
+        <label class="block text-sm font-medium text-text mb-1" for="age">Edad</label>
+        <input
+          class="w-full rounded-xl bg-background border border-bdcolor p-2 shadow-sm"
+          id="age"
+          formControlName="age"
+          name="age"
+          type="number"
+          min="1"
+          max="120"
+          placeholder="Escribe tu edad"
+        />
+        @if (getErrorMessage('age')) {
+          <p class="text-xs text-red-500 mt-1">{{ getErrorMessage('age') }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- ── SECCIÓN 2: PARTICIPACIÓN ── -->
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center size-7 rounded-full bg-main text-white text-xs font-bold shrink-0">2</span>
+        <h3 class="text-sm font-bold uppercase tracking-widest text-text">Participación</h3>
+        <div class="flex-1 h-px bg-bdcolor"></div>
+      </div>
+
+      <fieldset>
+        <legend class="block text-sm font-medium text-text mb-3">
+          Seleccione la categoría en la que participará
+        </legend>
+        <div class="grid grid-cols-1 gap-3">
+          @for (cat of categories; track cat.value) {
+            <button
+              type="button"
+              [class]="getCategoryClasses(cat)"
+              (click)="selectCategory(cat.value)"
+            >
+              <span class="text-3xl leading-none shrink-0">{{ cat.icon }}</span>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-sm uppercase tracking-wide text-gray-800">{{ cat.name }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">
+                  {{ cat.age }}
+                  @if (cat.sport) {
+                    · <span class="font-bold">{{ cat.sport }}</span>
+                  }
+                </p>
+              </div>
+              @if (selectedCategory === cat.value) {
+                <span class="shrink-0 text-lg">✓</span>
+              }
+            </button>
+          }
+        </div>
+        @if (getErrorMessage('category')) {
+          <p class="text-xs text-red-500 mt-2">{{ getErrorMessage('category') }}</p>
+        }
+      </fieldset>
+    </div>
+
+    <!-- ── SECCIÓN 3: INFO DEL EVENTO ── -->
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center size-7 rounded-full bg-main text-white text-xs font-bold shrink-0">3</span>
+        <h3 class="text-sm font-bold uppercase tracking-widest text-text">Info del evento</h3>
+        <div class="flex-1 h-px bg-bdcolor"></div>
+      </div>
+
+      <!-- ¿Necesita transporte? -->
+      <div class="flex items-start gap-3 rounded-xl border border-bdcolor bg-background p-3 shadow-sm">
+        <input
+          (change)="onTransportChange($event)"
+          class="size-5 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          id="needsTransport"
+          type="checkbox"
+          name="needsTransport"
+        />
+        <label class="text-sm text-text leading-snug" for="needsTransport">
+          ¿Necesita transporte desde la consulta hasta Villa San Miguel?
+        </label>
+      </div>
+
+      <!-- Pasajeros (condicional) -->
+      @if (needsTransport) {
+        <div class="rounded-xl border border-bdcolor bg-background p-3 shadow-sm">
+          <label class="block text-sm font-medium text-text mb-2">
+            ¿Cuántos pasajeros viajarán?
+          </label>
+          <div class="flex gap-4 mt-1">
+            @for (n of passengerOptions; track n) {
+              <div class="flex items-center gap-2">
+                <input
+                  class="size-5 rounded-full border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  [id]="'pass-' + n"
+                  type="radio"
+                  name="passengers"
+                  formControlName="passengers"
+                  [value]="n"
+                />
+                <label class="text-sm text-text" [for]="'pass-' + n">
+                  {{ n === 3 ? '3 o más' : n }}
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ¿Asistirá al almuerzo? -->
+      <div class="flex items-start gap-3 rounded-xl border border-bdcolor bg-background p-3 shadow-sm">
+        <input
+          class="size-5 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          id="attendsLunch"
+          type="checkbox"
+          name="attendsLunch"
+          formControlName="attendsLunch"
+        />
+        <label class="text-sm text-text leading-snug" for="attendsLunch">
+          ¿Asistirá al almuerzo incluido en el evento?
+        </label>
+      </div>
+
+      <!-- Confirmación de asistencia -->
+      <div class="flex items-start gap-3 rounded-xl border border-bdcolor bg-background p-3 shadow-sm">
+        <input
+          class="size-5 mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          id="confirmed"
+          type="checkbox"
+          name="confirmed"
+          formControlName="confirmed"
+        />
+        <label class="text-sm text-text leading-snug" for="confirmed">
+          Confirmo mi participación en el evento deportivo por el
+          <span class="font-semibold">3er aniversario del Centro de Fisioterapia Reinoso.</span>
+        </label>
+      </div>
+      @if (getErrorMessage('confirmed')) {
+        <p class="text-xs text-red-500">{{ getErrorMessage('confirmed') }}</p>
       }
     </div>
-    <div class="flex items-center gap-2">
-      <input
-        (change)="onCheckboxAcceptChange($event)"
-        class="size-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-        id="accept"
-        type="checkbox"
-        name="accept"
-        value="accept"
-      />
-      <label class="block text-sm text-gray-900" for="accept"
-        >¿Aceptas que te contactemos para ofrecerte nuestros servicios y promociones?</label
-      >
-    </div>
+
+    <!-- Botón -->
     <button
       [disabled]="loading()"
       (click)="registerAction()"
-      class="block w-full rounded-lg bg-main px-12 py-3 text-sm font-semibold text-white transition-colors"
+      class="block w-full rounded-xl bg-main px-12 py-3 text-sm font-semibold text-white transition-colors shadow-md disabled:opacity-60"
       type="submit"
     >
-      {{ loading() ? 'Cargando' : 'Participar' }}
+      {{ loading() ? 'Cargando...' : 'Participar' }}
     </button>
   </form>
 </div>

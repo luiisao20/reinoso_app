@@ -1,17 +1,44 @@
-<div class="border-b-bdcolor border-b-2 p-4">
-  <div class="grid grid-cols-3 items-center">
-    <ng-icon
-      name="matDirectionsRun"
-      size="50"
-      color="#49B1E9"
-      class="border border-bdcolor rounded-full"
-    />
-    <div class="justify-items-start">
-      <h2 class="font-semibold text-base">{{ item.lastName }} {{ item.name }}</h2>
-      <h2 class="font-thin text-sm">{{ item.phone }}</h2>
+<div class="border-b border-bdcolor p-4">
+  <div class="flex items-center gap-3">
+    <!-- Avatar icon -->
+    <div class="shrink-0">
+      <ng-icon
+        name="matDirectionsRun"
+        size="42"
+        color="#49B1E9"
+        class="border border-bdcolor rounded-full p-1 block"
+      />
     </div>
-    <button (click)="onSelectToDelete(item)" class="justify-items-end right-0">
-      <ng-icon name="matDelete" size="30" color="red" />
+
+    <!-- Info principal -->
+    <div class="flex-1 min-w-0">
+      <h2 class="font-semibold text-sm truncate">{{ item.lastName }} {{ item.name }}</h2>
+      <p class="text-xs text-gray-500">{{ item.age }} años</p>
+      <p class="text-xs text-gray-600 mt-0.5 truncate">{{ item.category }}</p>
+
+      <!-- Badges -->
+      <div class="flex flex-wrap gap-1 mt-1.5">
+        @if (item.needsTransport) {
+          <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+            🚌 Transporte ({{ item.passengers ?? 1 }} pas.)
+          </span>
+        }
+        @if (item.attendsLunch) {
+          <span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+            🍽️ Almuerzo
+          </span>
+        }
+        @if (item.winner) {
+          <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded-full">
+            🏆 Ganador
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Botón eliminar -->
+    <button (click)="onSelectToDelete(item)" class="shrink-0 ml-2">
+      <ng-icon name="matDelete" size="26" color="red" />
     </button>
   </div>
 </div>

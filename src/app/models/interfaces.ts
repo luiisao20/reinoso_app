@@ -2,10 +2,12 @@ export interface InfoModel {
   id?: string;
   name: string;
   lastName: string;
-  activity: string;
-  phone: string;
-  reasons: string[];
-  accept: boolean;
+  age: number;
+  category: string;
+  needsTransport: boolean;
+  passengers?: number | null;
+  attendsLunch: boolean;
+  confirmed: boolean;
   winner?: boolean;
 }
 

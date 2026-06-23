@@ -1,51 +1,66 @@
 <div class="bg-white shadow-lg rounded-2xl p-6 border border-gray-200 space-y-4 flex flex-col">
+  <!-- Cabecera del sorteo -->
   <div class="flex justify-between items-center border-b pb-3">
     <div>
       <h2 class="text-lg font-semibold text-gray-800">Sorteo #{{ draw.id }}</h2>
-      <p class="text-sm text-gray-500">
-        {{ getDateFormatted() }}
-      </p>
+      <p class="text-sm text-gray-500">{{ getDateFormatted() }}</p>
     </div>
-
     <span class="bg-blue-100 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full">
-      {{ draw.infos.length }} participantes
+      {{ draw.infos.length }} {{ draw.infos.length === 1 ? 'ganador' : 'ganadores' }}
     </span>
   </div>
 
+  <!-- Lista de ganadores -->
   <div class="space-y-3 max-h-72 overflow-y-auto pr-1">
     @for (item of draw.infos; track $index) {
-      <div class="border rounded-xl p-4 hover:shadow-md transition bg-gray-50">
-        <div>
-          <h3 class="font-semibold text-gray-800">{{ item.name }} {{ item.lastName }}</h3>
-          <p class="text-sm text-gray-500">
-            {{ item.activity }}
-          </p>
-          <p
-            class="text-xs font-semibold px-2 py-1 rounded-full my-2 place-self-end"
-            [class]="item.accept ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'"
-          >
-            {{ item.accept ? 'Aceptó' : 'No aceptó' }}
-          </p>
+      <div class="border rounded-xl p-4 hover:shadow-md transition bg-gray-50 space-y-2">
+        <!-- Nombre y edad -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-800 text-sm">{{ item.name }} {{ item.lastName }}</h3>
+            <p class="text-xs text-gray-500">{{ item.age }} años</p>
+          </div>
+          <span class="bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1 rounded-full">
+            🏆 Ganador
+          </span>
         </div>
-        <p class="text-sm text-gray-600 mt-2">
-          <ng-icon color="#49B1E9" size="15" name="ionCallSharp"></ng-icon>
-          {{ item.phone }}
+
+        <!-- Categoría -->
+        <p class="text-xs text-gray-600 bg-gray-100 rounded-lg px-2 py-1 truncate">
+          {{ item.category }}
         </p>
-        <div class="flex flex-wrap gap-2 mt-3">
-          @for (reason of item.reasons; track reason) {
-            <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-              {{ reason }}
+
+        <!-- Badges de transporte y almuerzo -->
+        <div class="flex flex-wrap gap-2">
+          @if (item.needsTransport) {
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+              🚌 Transporte ({{ item.passengers ?? 1 }} pas.)
+            </span>
+          } @else {
+            <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">
+              Sin transporte
+            </span>
+          }
+
+          @if (item.attendsLunch) {
+            <span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+              🍽️ Almuerzo
+            </span>
+          } @else {
+            <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">
+              Sin almuerzo
             </span>
           }
         </div>
       </div>
     }
   </div>
+
+  <!-- Botón eliminar sorteo -->
   <gc-button
     (click)="onSelectToDelete(draw)"
     variant="outline"
     background="red"
     class="place-self-center"
-    >Eliminar sorteo</gc-button
-  >
+  >Eliminar sorteo</gc-button>
 </div>

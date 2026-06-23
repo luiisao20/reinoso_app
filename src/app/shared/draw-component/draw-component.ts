@@ -1,14 +1,12 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { DrawInfo } from '../../models/interfaces';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { ionCallSharp } from '@ng-icons/ionicons';
 import { FormatDate } from '../../service/format-date';
 import { ButtonComponent } from "garaq-angular-components";
 
 @Component({
   selector: 'app-draw-component',
-  imports: [NgIcon, ButtonComponent],
-  providers: provideIcons({ ionCallSharp }),
+  imports: [ButtonComponent],
+  providers: [],
   templateUrl: './draw-component.html',
   styleUrl: './draw-component.css',
 })
